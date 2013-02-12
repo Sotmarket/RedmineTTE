@@ -37,7 +37,7 @@ module IssuesHelper
       issues_arr << issue
     end 
     begin
-      actual_filter = params[:group_by].present? ? params[:group_by] : session[:query][:group_by]
+      actual_filter = @query.group_by
       
       issues_group = issues_arr.group_by{|issue| issue.send("#{actual_filter}")}
       issues_by_group_arr = issues_group[group]
