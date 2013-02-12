@@ -38,12 +38,9 @@ module IssuesHelper
     end 
     begin
       actual_filter = params[:group_by].present? ? params[:group_by] : session[:query][:group_by]
-      if issues_arr.first.send("#{actual_filter}").nil?
-        issues_by_group_arr = issues_arr
-      else
-        issues_group = issues_arr.group_by{|issue| issue.send("#{actual_filter}")}
-        issues_by_group_arr = issues_group[group]
-      end
+      
+      issues_group = issues_arr.group_by{|issue| issue.send("#{actual_filter}")}
+      issues_by_group_arr = issues_group[group]
 
       summ = 0
       issues_by_group_arr.each do |issue|
