@@ -37,10 +37,11 @@ module IssuesHelper
       issues_arr << issue
     end 
     begin
-      if issues_arr.first.send("#{params[:group_by]}").nil?
+      actual_filter = params[:group_by].present? ? params[:group_by] : session[:query][:group_by]
+      if issues_arr.first.send("#{actual_filter}").nil?
         issues_by_group_arr = issues_arr
       else
-        issues_group = issues_arr.group_by{|issue| issue.send("#{params[:group_by]}")} unless params[:group_by].nil?
+        issues_group = issues_arr.group_by{|issue| issue.send("#{actual_filter}")}
         issues_by_group_arr = issues_group[group]
       end
 
