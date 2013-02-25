@@ -46,7 +46,8 @@ module IssuesHelper
       issues_by_group_arr.each do |issue|
         summ += issue.estimated_hours unless issue.estimated_hours.nil?
       end
-      pluralize summ, 'hour'
+      fraction = ((summ - summ.to_i) * 60).round
+      "#{pluralize summ.to_i, 'hour'} #{pluralize fraction, 'minute'if fraction > 0}"
     rescue => e
       e.message
     end
