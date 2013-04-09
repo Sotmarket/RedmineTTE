@@ -44,7 +44,10 @@ module IssuesHelper
 
       summ = 0
       issues_by_group_arr.each do |issue|
-        summ += issue.estimated_hours unless issue.estimated_hours.nil?
+        if issue.estimated_hours.present?
+          # summ += issue.estimated_hours
+          summ += issue.estimated_hours - issue.estimated_hours * issue.done_ratio / 100
+        end
       end
       fraction = ((summ - summ.to_i) * 60).round
       "#{pluralize summ.to_i, 'hour'} #{pluralize fraction, 'minute'if fraction > 0}"
