@@ -45,7 +45,6 @@ module IssuesHelper
       summ = 0
       issues_by_group_arr.each do |issue|
         if issue.estimated_hours.present?
-          # summ += issue.estimated_hours
           summ += issue.estimated_hours - issue.estimated_hours * issue.done_ratio / 100
         end
       end
