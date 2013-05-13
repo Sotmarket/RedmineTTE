@@ -332,13 +332,11 @@ class IssuesController < ApplicationController
     string = ''
     last = 0
     array.each_with_index do |val, index|
-      if last == 0
-        string = val.to_s
-      elsif array[index-1] != val-1 && array[index+1] == val+1 # start of range
+      if array[index-1] != val-1 && array[index+1] == val+1       # start of range
         string += "#{val}"
-      elsif array[index+1] != val+1 && last == val - 1         # end of range
+      elsif array[index+1] != val+1 && last == val-1 && last != 0 # end of range
         string += "-#{val}, "
-      elsif array[index-1] != val-1 && array[index+1] != val+1 # val no included into range
+      elsif array[index-1] != val-1 && array[index+1] != val+1    # val no included into range
         string += "#{val}, "
       end
       last = val
