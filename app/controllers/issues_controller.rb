@@ -108,7 +108,7 @@ class IssuesController < ApplicationController
     @changesets = @issue.changesets.visible.all
     @changesets.reverse! if User.current.wants_comments_in_reverse_order?
 
-    array_of_revisions = @changesets.map{|changeset| changeset.revision.to_i unless changeset.comments.include? 'merge'}.compact if checkout_revisions @changesets
+    array_of_revisions = @changesets.map{|changeset| changeset.revision.to_i unless changeset.comments.downcase.include? 'merge'}.compact if checkout_revisions @changesets
     @list_of_revisions = revisions_to_list(array_of_revisions) if array_of_revisions != nil && array_of_revisions.any?
 
     @relations = @issue.relations.select {|r| r.other_issue(@issue) && r.other_issue(@issue).visible? }

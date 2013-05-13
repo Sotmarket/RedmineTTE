@@ -1,5 +1,5 @@
 <% changesets.each do |changeset| %>
-    <div class="changeset <%= cycle('odd', 'even') %>" style="<%= (changeset.comments.include? 'merge')? 'background: #D3EDD3' : '' %>">
+    <div class="changeset <%= cycle('odd', 'even') %>" style="<%= (changeset.comments.downcase.include? 'merge')? 'background: #D3EDD3' : '' %>">
     <p><%= link_to_revision(changeset, changeset.repository,
                             :text => "#{l(:label_revision)} #{changeset.format_identifier}") %><br />
         <span class="author"><%= authoring(changeset.committed_on, changeset.author) %></span></p>
