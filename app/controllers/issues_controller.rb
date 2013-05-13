@@ -321,7 +321,7 @@ class IssuesController < ApplicationController
   def checkout_revisions changesets
     revisions = []
     changesets.each do |changeset|
-      if changeset.revision.to_i != 0
+      if changeset.revision.to_i == 0
         return false
       end
     end
