@@ -365,7 +365,7 @@ class IssuesController < ApplicationController
 
     string = ''
     last = 0
-    revisions_without_merge -= arr_rev if arr_rev.any?
+    revisions_without_merge -= merged_revs_arr if merged_revs_arr.any?
     revisions_without_merge.each_with_index do |val, index|
       if array[index-1] != val-1 && array[index+1] == val+1       # start of range
         string += "#{val}"
