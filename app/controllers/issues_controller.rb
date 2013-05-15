@@ -340,7 +340,6 @@ class IssuesController < ApplicationController
   end
 
   def revisions_for_merging revisions_without_merge, text_of_commits_with_merge
-    return false unless revisions_without_merge.any?
     all_merged_revs = []
     text_of_commits_with_merge.each do |text|
       if text.include? 'rev@'
@@ -351,18 +350,20 @@ class IssuesController < ApplicationController
       merged_revs = []
       unless res.nil?
         merged_revs = res.split(', ')
-        merged_revs.map! do |rev|
-          if rev.include? '-'
-            new_rev = rev.split('-')
-            (new_rev.first..new_rev.last).to_a.map!{|val| val.to_i}
-          else
-            rev.to_i
+        if merged_revs.any?
+          merged_revs.map! do |rev|
+            if rev.include? '-'
+              new_rev = rev.split('-')
+              (new_rev.first..new_rev.last).to_a.map!{|val| val.to_i}
+            else
+              rev.to_i
+            end
           end
         end
-        all_merged_revs << merged_revs.flatten! if merged_revs.any?
+        all_merged_revs << merged_revs
       end
     end
-
+    all_merged_revs.flatten!
     string = ''
     last = 0
     revisions_without_merge -= all_merged_revs if all_merged_revs.any?
