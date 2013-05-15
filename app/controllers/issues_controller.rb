@@ -108,7 +108,7 @@ class IssuesController < ApplicationController
     @changesets = @issue.changesets.visible.all
     @changesets.reverse! if User.current.wants_comments_in_reverse_order?
     
-    if @issue.project.identifier = 'redesign-code'
+    if @issue.project.identifier == 'redesign-code' || @issue.project.parent != nil && @issue.project.parent.identifier == 'redesign-code'
       array_of_revisions = []
       merge_commits      = []
 
