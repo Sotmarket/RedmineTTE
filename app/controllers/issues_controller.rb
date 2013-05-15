@@ -107,19 +107,21 @@ class IssuesController < ApplicationController
 
     @changesets = @issue.changesets.visible.all
     @changesets.reverse! if User.current.wants_comments_in_reverse_order?
-      
-    array_of_revisions = []
-    merge_commits      = []
+    
+    if @issue.identifier = 'redesign-code'
+      array_of_revisions = []
+      merge_commits      = []
 
-    if checkout_revisions @changesets
-      @changesets.map do |changeset| 
-        if changeset.comments.downcase.include? 'merge'
-          merge_commits << changeset.comments.downcase
-        else
-          array_of_revisions << changeset.revision.to_i
+      if checkout_revisions @changesets
+        @changesets.map do |changeset| 
+          if changeset.comments.downcase.include? 'merge'
+            merge_commits << changeset.comments.downcase
+          else
+            array_of_revisions << changeset.revision.to_i
+          end
         end
+        @list_of_revisions = revisions_for_merging(array_of_revisions, merge_commits) if array_of_revisions.any?
       end
-      @list_of_revisions = revisions_for_merging(array_of_revisions, merge_commits) if array_of_revisions.any?
     end
 
     @relations = @issue.relations.select {|r| r.other_issue(@issue) && r.other_issue(@issue).visible? }
