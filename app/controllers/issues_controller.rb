@@ -367,11 +367,11 @@ class IssuesController < ApplicationController
     last = 0
     revisions_without_merge -= all_merged_revs if all_merged_revs.any?
     revisions_without_merge.each_with_index do |val, index|
-      if array[index-1] != val-1 && array[index+1] == val+1       # start of range
+      if revisions_without_merge[index-1] != val-1 && revisions_without_merge[index+1] == val+1       # start of range
         string += "#{val}"
-      elsif array[index+1] != val+1 && last == val-1 && last != 0 # end of range
+      elsif revisions_without_merge[index+1] != val+1 && last == val-1 && last != 0 # end of range
         string += "-#{val}, "
-      elsif array[index-1] != val-1 && array[index+1] != val+1    # val no included into range
+      elsif revisions_without_merge[index-1] != val-1 && revisions_without_merge[index+1] != val+1    # val no included into range
         string += "#{val}, "
       end
       last = val
