@@ -107,9 +107,20 @@ class IssuesController < ApplicationController
 
     @changesets = @issue.changesets.visible.all
     @changesets.reverse! if User.current.wants_comments_in_reverse_order?
+      
+    array_of_revisions = []
+    merge_commits      = []
 
-    array_of_revisions = @changesets.map{|changeset| changeset.revision.to_i unless changeset.comments.downcase.include? 'merge'}.compact if checkout_revisions @changesets
-    @list_of_revisions = revisions_to_list(array_of_revisions) if array_of_revisions != nil && array_of_revisions.any?
+    if checkout_revisions @changesets
+      @changesets.map do |changeset| 
+        if changeset.comments.downcase.include? 'merge'
+          merge_commits << changeset.comments.downcase
+        else
+          array_of_revisions << changeset.revision.to_i
+        end
+      end
+      @list_of_revisions = revisions_for_merging(array_of_revisions, merge_commits) if array_of_revisions.any?
+    end
 
     @relations = @issue.relations.select {|r| r.other_issue(@issue) && r.other_issue(@issue).visible? }
     @allowed_statuses = @issue.new_statuses_allowed_to(User.current)
@@ -328,10 +339,34 @@ class IssuesController < ApplicationController
     true
   end
 
-  def revisions_to_list array
+  def revisions_for_merging revisions_without_merge, text_of_commits_with_merge
+    return false unless revisions_without_merge.any?
+    all_merged_revs = []
+    text_of_commits_with_merge.each do |text|
+      if text.include? 'rev@'
+        res = text.split('rev@').last.split(' from').first
+      elsif text.include? 'revs@'
+        res = text.split('revs@').last.split(' from').first
+      end
+      merged_revs = []
+      unless res.nil?
+        merged_revs = res.split(', ')
+        merged_revs.map! do |rev|
+          if rev.include? '-'
+            new_rev = rev.split('-')
+            (new_rev.first..new_rev.last).to_a.map!{|val| val.to_i}
+          else
+            rev.to_i
+          end
+        end
+        merged_revs_arr << merged_revs.flatten! if merged_revs.any?
+      end
+    end
+
     string = ''
     last = 0
-    array.each_with_index do |val, index|
+    revisions_without_merge -= arr_rev if arr_rev.any?
+    revisions_without_merge.each_with_index do |val, index|
       if array[index-1] != val-1 && array[index+1] == val+1       # start of range
         string += "#{val}"
       elsif array[index+1] != val+1 && last == val-1 && last != 0 # end of range
